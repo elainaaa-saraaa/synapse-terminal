@@ -1,198 +1,193 @@
-// Synapse Terminal - Master Logic & Kinematic Physics Core
+// Synapse Sanctuary - Calm Narrative & Soft Physics Engine
 
-const views = {
-    home: document.getElementById('view-home'),
-    language: document.getElementById('view-language'),
-    precision: document.getElementById('view-precision')
+const stages = {
+    home: document.getElementById('stage-home'),
+    language: document.getElementById('stage-language'),
+    precision: document.getElementById('stage-precision')
 };
-const systemHudStatus = document.getElementById('system-hud-status');
+const hudModeBadge = document.getElementById('hud-mode-badge');
 
-function switchActiveView(viewKey) {
-    Object.values(views).forEach(view => view.classList.remove('active'));
-    views[viewKey].classList.add('active');
+function switchStageView(stageKey) {
+    Object.values(stages).forEach(stage => stage.classList.remove('active'));
+    stages[stageKey].classList.add('active');
     
-    if (viewKey === 'language') {
-        systemHudStatus.innerText = "Language Arena Active";
-        initLanguageStoryNode();
-    } else if (viewKey === 'precision') {
-        systemHudStatus.innerText = "Precision Canvas Active";
-        initPrecisionCanvasContext();
+    if (stageKey === 'language') {
+        hudModeBadge.innerText = "Journey: Mindful Text Translation";
+        initSanctuaryStory();
+    } else if (stageKey === 'precision') {
+        hudModeBadge.innerText = "Journey: Gentle Path Tracking";
+        initSanctuaryCanvas();
     } else {
-        systemHudStatus.innerText = "Ecosystem Live";
-        stopPrecisionTrackingLoop();
+        hudModeBadge.innerText = "Calm Mind // Clear Track";
+        stopCanvasEngine();
     }
 }
 
 // ==========================================
-// SYSTEM 1: THE LITERARY NOVEL LOGIC
+// DECK 1: THE CALMING TEXT NOVEL
 // ==========================================
-const storyLog = document.getElementById('story-terminal-log');
-const choicesContainer = document.getElementById('story-choices');
+const storyTextContainer = document.getElementById('story-text-container');
+const storyChoicesDock = document.getElementById('story-choices-dock');
 
-let currentStep = 0;
-const visualStoryTree = [
+let storyIndex = 0;
+const calmingStoryTree = [
     {
-        text: `The telescope arrays locked onto the deep space transmission at midnight. Our signal relays absorbed the wave vector smoothly, but the raw alphanumeric character blocks began to buckle under algorithmic distortion fields. On the screen, the message reads: <br><br>"We request immediate secure overwatch and mutual <span class="word-glow">REPCET</span>."`,
+        text: `Take a deep, slow breath. Let the rush of the world fall away for just a moment. As we look at the journal entry layout in front of us, let's bring clarity to the scrambled phrasing patterns: <br><br>"True creative clarity is built upon deep mutual <span class="target-word">REPCET</span> for our inner pacing."`,
         options: [
-            { label: "Decode: Respect", target: "respect" },
-            { label: "Decode: Receipt", target: "receipt" }
+            { text: "Restore: Respect", value: "respect" },
+            { text: "Restore: Receipt", value: "receipt" }
         ]
     },
     {
-        text: `The alignment sequence calibrated beautifully. The incoming telemetry pipeline stabilized. However, local gravitational shifts are threatening our primary orientation deck. The navigation computers flag a cross-check prompt: <br><br>"Synchronize main navigation flight tracking coordinates to <span class="word-glow">TIHS</span> nodes."`,
+        text: `Beautifully aligned. The sentence structures settle cleanly into place. Let's look closely at the next thought on the page, and gently guide the word tracking back to center:<br><br>"Once we align our focus to <span class="target-word">TIHS</span> still point, the noise fades away."`,
         options: [
-            { label: "Align: This", target: "this" },
-            { label: "Align: Thus", target: "thus" }
+            { text: "Guide: This", value: "this" },
+            { text: "Guide: Thus", value: "thus" }
         ]
     },
     {
-        text: `Orbital stabilization completed. The ship cruises effortlessly out of the gravity slipstream into clear deep space. A towering mirror-finish monolith stands silently before the helm, illuminating your dashboard with access indicators:<br><br>"System identity authenticated. Welcome to the intellectual <span class="word-glow">FRENSHUP</span> matrix core."`,
+        text: `The thoughts carry a natural, rhythmic flow now. The final journal entry begins to glow with warm, reassuring light as the translation circles complete:<br><br>"We unlock our genuine potential when we foster a gentle <span class="target-word">FRENSHUP</span> with our own minds."`,
         options: [
-            { label: "Initialize: Friendship", target: "friendship" },
-            { label: "Initialize: Freshness", target: "freshness" }
+            { text: "Awaken: Friendship", value: "friendship" },
+            { text: "Awaken: Freshness", value: "freshness" }
         ]
     },
     {
-        text: `Ecosystem loops fully calculated. Spatial typography tracking matrices optimized. Fine motor alignment pathways successfully mapped. Synapse Terminal calibration sequence complete.`,
+        text: `Your focus is grounded, and your mind is clear. The calibration circuit is perfectly balanced. Welcome back to your serene sanctuary baseline.`,
         options: []
     }
 ];
 
-function initLanguageStoryNode() {
-    currentStep = 0;
-    renderStoryStep();
+function initSanctuaryStory() {
+    storyIndex = 0;
+    renderCozyStoryNode();
 }
 
-function renderStoryStep() {
-    choicesContainer.innerHTML = '';
-    const node = visualStoryTree[currentStep];
-    storyLog.innerHTML = node.text;
+function renderCozyStoryNode() {
+    storyChoicesDock.innerHTML = '';
+    const roundNode = calmingStoryTree[storyIndex];
+    storyTextContainer.innerHTML = roundNode.text;
     
-    node.options.forEach(opt => {
-        const btn = document.createElement('button');
-        btn.className = 'sleek-btn';
-        btn.innerText = opt.label;
-        btn.onclick = () => verifyLinguisticAnswer(opt.target);
-        choicesContainer.appendChild(btn);
+    roundNode.options.forEach(opt => {
+        const button = document.createElement('button');
+        button.className = 'coral-btn';
+        button.innerText = opt.text;
+        button.onclick = () => validateCozyChoice(opt.value);
+        storyChoicesDock.appendChild(button);
     });
 }
 
-function verifyLinguisticAnswer(selection) {
-    if (selection === 'respect' || selection === 'this' || selection === 'friendship') {
-        currentStep++;
-        if (currentStep < visualStoryTree.length) {
-            renderStoryStep();
+function validateCozyChoice(answer) {
+    if (answer === 'respect' || answer === 'this' || answer === 'friendship') {
+        storyIndex++;
+        if (storyIndex < calmingStoryTree.length) {
+            renderCozyStoryNode();
         }
     }
 }
 
 // ==========================================
-// SYSTEM 2: THE ELEGANT PHYSICS CANVAS
+// DECK 2: GENTLE REMINDERS CANVAS PHYSICS
 // ==========================================
-const canvas = document.getElementById('star-map');
+const canvas = document.getElementById('precision-canvas');
 const ctx = canvas.getContext('2d');
 
-let trackingLoopId = null;
-let targetNode = { x: 200, y: 150, r: 20 };
-let physicalCursor = { x: 150, y: 150 };
-let virtualCursor = { x: 150, y: 150 };
-const LERP_SMOOTHING_VECTOR = 0.07; 
+let renderLoopId = null;
+let targetFlower = { x: 200, y: 150, r: 18 };
+let actualMouse = { x: 150, y: 150 };
+let smoothedMouse = { x: 150, y: 150 };
+const SMOOTH_FACTOR = 0.06; // Highly dampened, soft LERP drag trajectory
 
-function initPrecisionCanvasContext() {
-    resizePrecisionCanvas();
-    window.addEventListener('resize', resizePrecisionCanvas);
-    canvas.addEventListener('mousemove', cacheCanvasCoordinates);
-    canvas.addEventListener('click', processTargetHitCheck);
+function initSanctuaryCanvas() {
+    scaleSanctuaryCanvas();
+    window.addEventListener('resize', scaleSanctuaryCanvas);
+    canvas.addEventListener('mousemove', handleCanvasPointerMove);
+    canvas.addEventListener('click', handleTargetClickTest);
     
-    spawnNextTargetCoordinate();
-    trackingLoopId = requestAnimationFrame(renderKinematicPhysicsFrame);
+    repositionTargetFlower();
+    renderLoopId = requestAnimationFrame(loopSanctuaryCanvasFrame);
 }
 
-function resizePrecisionCanvas() {
+function scaleSanctuaryCanvas() {
     if (!canvas) return;
     canvas.width = canvas.parentElement.clientWidth;
     canvas.height = canvas.parentElement.clientHeight;
 }
 
-function cacheCanvasCoordinates(e) {
-    const boundaries = canvas.getBoundingClientRect();
-    // Simulate high-frequency tremors as subtle organic mathematical noise
-    let syntheticTremorX = Math.sin(performance.now() * 0.08) * 3;
-    let syntheticTremorY = Math.cos(performance.now() * 0.08) * 3;
+function handleCanvasPointerMove(e) {
+    const box = canvas.getBoundingClientRect();
+    // Inject gentle organic wave tremors onto the raw tracking indicator
+    let waveTremorX = Math.sin(performance.now() * 0.05) * 2.5;
+    let waveTremorY = Math.cos(performance.now() * 0.05) * 2.5;
 
-    physicalCursor.x = e.clientX - boundaries.left + syntheticTremorX;
-    physicalCursor.y = e.clientY - boundaries.top + syntheticTremorY;
+    actualMouse.x = e.clientX - box.left + waveTremorX;
+    actualMouse.y = e.clientY - box.top + waveTremorY;
 }
 
-function spawnNextTargetCoordinate() {
-    targetNode.x = Math.random() * (canvas.width - 100) + 50;
-    targetNode.y = Math.random() * (canvas.height - 100) + 50;
+function repositionTargetFlower() {
+    targetFlower.x = Math.random() * (canvas.width - 120) + 60;
+    targetFlower.y = Math.random() * (canvas.height - 120) + 60;
 }
 
-function processTargetHitCheck() {
-    let dx = virtualCursor.x - targetNode.x;
-    let dy = virtualCursor.y - targetNode.y;
+function handleTargetClickTest() {
+    let dx = smoothedMouse.x - targetFlower.x;
+    let dy = smoothedMouse.y - targetFlower.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance <= targetNode.r) {
-        spawnNextTargetCoordinate();
+    if (distance <= targetFlower.r) {
+        repositionTargetFlower();
     }
 }
 
-function renderKinematicPhysicsFrame() {
-    if (!views.precision.classList.contains('active')) return;
+function loopSanctuaryCanvasFrame() {
+    if (!stages.precision.classList.contains('active')) return;
 
-    // Elegant deep monochrome canvas clear
-    ctx.fillStyle = '#070709';
+    // Warm cream background clear
+    ctx.fillStyle = '#f4f1ea';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-    // Render very soft geometric background navigation grid lines
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.02)';
-    ctx.lineWidth = 1;
-    for (let i = 0; i < canvas.width; i += 40) {
-        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
-    }
-    for (let j = 0; j < canvas.height; j += 40) {
-        ctx.beginPath(); ctx.moveTo(0, j); ctx.lineTo(canvas.width, j); ctx.stroke();
-    }
+    // SYSTEM LERP PATH OVERRIDE CALCULATOR
+    smoothedMouse.x += (actualMouse.x - smoothedMouse.x) * SMOOTH_FACTOR;
+    smoothedMouse.y += (actualMouse.y - smoothedMouse.y) * SMOOTH_FACTOR;
 
-    // LINEAR INTERPOLATION (LERP) SIGNAL SMOOTHING LOOP
-    virtualCursor.x += (physicalCursor.x - virtualCursor.x) * LERP_SMOOTHING_VECTOR;
-    virtualCursor.y += (physicalCursor.y - virtualCursor.y) * LERP_SMOOTHING_VECTOR;
-
-    // A. Minimalist Target Alignment Node (Frosted Cyan Halo)
+    // 1. Draw Target Node (Soft Pastel Pink/Coral Flower Ring)
     ctx.beginPath();
-    ctx.arc(targetNode.x, targetNode.y, targetNode.r, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 240, 255, 0.02)';
-    ctx.strokeStyle = 'rgba(0, 240, 255, 0.3)';
-    ctx.lineWidth = 1;
+    ctx.arc(targetFlower.x, targetFlower.y, targetFlower.r, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(224, 102, 92, 0.08)';
+    ctx.strokeStyle = 'rgba(224, 102, 92, 0.4)';
+    ctx.lineWidth = 2;
     ctx.fill();
     ctx.stroke();
 
-    // B. Raw Unfiltered Physical Path (Muted Coral Dot - Tremor Representation)
+    // Center seed core node
     ctx.beginPath();
-    ctx.arc(physicalCursor.x, physicalCursor.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(244, 63, 94, 0.3)';
+    ctx.arc(targetFlower.x, targetFlower.y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#e0665c';
     ctx.fill();
 
-    // C. Mathematically Stabilized Vector Node (Clean Purple Glow Pointer)
-    ctx.shadowBlur = 12;
-    ctx.shadowColor = '#bf7fff';
+    // 2. Draw Raw Shaky Input Trail (Soft Muted Gray Dot)
     ctx.beginPath();
-    ctx.arc(virtualCursor.x, virtualCursor.y, 6, 0, Math.PI * 2);
-    ctx.fillStyle = '#bf7fff';
+    ctx.arc(actualMouse.x, actualMouse.y, 3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(30, 45, 36, 0.2)';
     ctx.fill();
-    // Reset shadows to protect hardware rendering performance
-    ctx.shadowBlur = 0;
 
-    trackingLoopId = requestAnimationFrame(renderKinematicPhysicsFrame);
+    // 3. Draw Smoothed Stable Pointer (Beautiful Deep Forest Green Orb)
+    ctx.beginPath();
+    ctx.arc(smoothedMouse.x, smoothedMouse.y, 6, 0, Math.PI * 2);
+    ctx.fillStyle = '#1e2d24';
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 1.5;
+    ctx.fill();
+    ctx.stroke();
+
+    renderLoopId = requestAnimationFrame(loopSanctuaryCanvasFrame);
 }
 
-function stopPrecisionTrackingLoop() {
-    if (trackingLoopId) cancelAnimationFrame(trackingLoopId);
-    window.removeEventListener('resize', resizePrecisionCanvas);
+function stopCanvasEngine() {
+    if (renderLoopId) cancelAnimationFrame(renderLoopId);
+    window.removeEventListener('resize', scaleSanctuaryCanvas);
     if (canvas) {
-        canvas.removeEventListener('mousemove', cacheCanvasCoordinates);
-        canvas.removeEventListener('click', processTargetHitCheck);
+        canvas.removeEventListener('mousemove', handleCanvasPointerMove);
+        canvas.removeEventListener('click', handleTargetClickTest);
     }
 }

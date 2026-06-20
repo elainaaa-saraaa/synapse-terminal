@@ -3,184 +3,202 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Synapse Terminal</title>
+    <title>Synapse Sanctuary</title>
     <style>
         :root {
-            --bg-gradient: radial-gradient(circle at 50% 50%, #121214 0%, #0a0a0c 100%);
-            --glass-panel: rgba(20, 20, 25, 0.7);
-            --glass-border: rgba(255, 255, 255, 0.06);
-            --accent-cyan: #00f0ff;
-            --accent-purple: #bf7fff;
-            --text-primary: #f4f4f5;
-            --text-secondary: #a1a1aa;
+            --bg-cozy: #c3d7cf; /* Beautiful soft sage green */
+            --panel-cream: #f4f1ea; /* Soft warm cream */
+            --text-dark: #1e2d24; /* Gentle deep slate forest green */
+            --accent-coral: #e0665c; /* Soft terracotta red */
+            --accent-coral-hover: #cd5349;
+            --accent-mint: #e2ede8;
+            --border-soft: rgba(30, 45, 36, 0.12);
         }
 
         body, html {
             margin: 0; padding: 0; width: 100%; height: 100%;
-            background: var(--bg-gradient); color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            overflow: hidden; -webkit-font-smoothing: antialiased;
+            background-color: var(--bg-cozy); color: var(--text-dark);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow: hidden; display: flex; flex-direction: column;
         }
 
-        /* PREMIUM GLASS SHELL */
-        .app-shell {
-            display: flex; flex-direction: column; width: 100%; height: 100%; box-sizing: border-box;
+        /* COZY TOP NAVIGATION BAR */
+        .game-nav {
+            padding: 24px 48px; display: flex; justify-content: space-between; align-items: center;
+            background: transparent; z-index: 10;
+        }
+        .brand-title {
+            font-size: 1.2rem; font-weight: 700; color: var(--text-dark); letter-spacing: -0.3px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .brand-title::before {
+            content: "🌲"; font-size: 1.3rem;
+        }
+        .nav-status {
+            font-size: 0.85rem; font-weight: 600; color: var(--text-dark); opacity: 0.8;
         }
 
-        .header-hud {
-            padding: 24px 40px; display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid var(--glass-border); background: rgba(10, 10, 12, 0.5);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-        }
-        .logo-mark {
-            font-size: 1.1rem; font-weight: 800; letter-spacing: 2px; color: #ffffff;
-        }
-        .status-badge {
-            font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px;
-            color: var(--accent-purple); background: rgba(191, 127, 255, 0.1);
-            padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(191, 127, 255, 0.2);
-        }
-
-        /* DYNAMIC SCENE CONTAINER */
-        .stage-view { flex: 1; display: none; padding: 40px; box-sizing: border-box; }
-        .stage-view.active { display: flex; }
+        /* SCENE FRAME STATE MACHINE */
+        .game-stage { flex: 1; display: none; padding: 0 48px; box-sizing: border-box; z-index: 5; position: relative; }
+        .game-stage.active { display: flex; }
 
         /* ==========================================
-           VIEW 1: LUXURY HOME PLATFORM
+           SCENE 1: THE WHOLESOME HOME DECK
            ========================================== */
-        #view-home {
-            flex-direction: column; align-items: center; justify-content: center; gap: 48px;
+        #stage-home {
+            flex-direction: column; align-items: center; justify-content: center; text-align: center; margin-top: -60px;
         }
-        .intro-text-wrapper {
-            text-align: center; max-width: 600px;
+        .hero-text { max-width: 650px; margin-bottom: 40px; }
+        .hero-text h2 { font-size: 2.8rem; font-weight: 800; margin: 0 0 16px 0; color: var(--text-dark); letter-spacing: -0.8px; }
+        .hero-text p { font-size: 1.05rem; line-height: 1.6; color: var(--text-dark); opacity: 0.8; margin: 0; }
+
+        .deck-row { display: flex; gap: 24px; width: 100%; max-width: 800px; }
+        
+        .cozy-card {
+            flex: 1; background: var(--panel-cream); border: 2px solid var(--border-soft);
+            border-radius: 16px; padding: 32px; text-align: left; cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 8px 24px rgba(30, 45, 36, 0.06);
         }
-        .intro-text-wrapper h2 {
-            font-size: 2.2rem; font-weight: 700; margin: 0 0 12px 0; color: #ffffff; letter-spacing: -0.5px;
+        .cozy-card:hover {
+            transform: translateY(-6px); border-color: var(--text-dark);
+            box-shadow: 0 16px 32px rgba(30, 45, 36, 0.12);
         }
-        .intro-text-wrapper p {
-            font-size: 1rem; line-height: 1.5; color: var(--text-secondary); margin: 0;
-        }
-        .deck-grid {
-            display: flex; gap: 24px; width: 100%; max-width: 840px;
-        }
-        .premium-card {
-            flex: 1; background: var(--glass-panel); border: 1px solid var(--glass-border);
-            border-radius: 16px; padding: 36px; text-align: left; cursor: pointer; position: relative;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); backdrop-filter: blur(10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-        .premium-card:hover {
-            border-color: rgba(255, 255, 255, 0.15); transform: translateY(-6px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 40px rgba(0, 240, 255, 0.03);
-        }
-        .card-tag {
-            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
-            color: var(--accent-cyan); margin-bottom: 24px;
-        }
-        .card-heading {
-            font-size: 1.4rem; font-weight: 600; color: #ffffff; margin: 0 0 10px 0;
-        }
-        .card-body {
-            font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; margin: 0;
-        }
+        .card-emoji { font-size: 1.8rem; margin-bottom: 16px; }
+        .card-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin: 0 0 8px 0; }
+        .card-desc { font-size: 0.9rem; color: var(--text-dark); opacity: 0.75; line-height: 1.5; margin: 0; }
 
         /* ==========================================
-           VIEWS 2 & 3: GAME SYSTEMS BRIDGES
+           SCENE 2 & 3: GAMEPLAY BRIDGES
            ========================================== */
-        .workspace-split { display: flex; width: 100%; gap: 32px; }
-        .glass-console {
-            flex: 1.3; background: var(--glass-panel); border: 1px solid var(--glass-border);
-            border-radius: 20px; display: flex; flex-direction: column; padding: 40px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3); position: relative; backdrop-filter: blur(10px);
+        .bridge-layout { display: flex; width: 100%; gap: 32px; height: 75%; align-items: center; justify-content: center; }
+        
+        .story-console {
+            width: 100%; max-width: 750px; background: var(--panel-cream); border: 2px solid var(--border-soft);
+            border-radius: 20px; display: flex; flex-direction: column; padding: 40px; box-sizing: border-box;
+            box-shadow: 0 12px 36px rgba(30, 45, 36, 0.08); position: relative; min-height: 320px;
         }
-        .story-scroller {
-            flex: 1; font-size: 1.35rem; line-height: 1.7; color: var(--text-primary);
-            font-weight: 400; letter-spacing: -0.2px;
-        }
-        .word-glow {
-            color: var(--accent-cyan); font-weight: 600; text-decoration: none;
-            border-bottom: 2px dashed rgba(0, 240, 25ff, 0.4); padding-bottom: 2px;
+        .story-text { flex: 1; font-size: 1.3rem; line-height: 1.75; color: var(--text-dark); font-weight: 500; }
+        .target-word {
+            color: var(--accent-coral); font-weight: 700; border-bottom: 2px dashed var(--accent-coral);
+            padding: 0 4px; background: rgba(224, 102, 92, 0.06); border-radius: 4px;
         }
         
-        .button-dock { display: flex; gap: 16px; justify-content: center; margin-top: 24px; }
-        .sleek-btn {
-            padding: 16px 40px; background: #ffffff; border: none;
-            color: #000000; font-family: inherit; font-size: 0.95rem; font-weight: 600;
-            border-radius: 30px; cursor: pointer; transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 4px 12px rgba(255,255,255,0.1);
+        .choice-dock { display: flex; gap: 16px; justify-content: center; margin-top: 32px; }
+        
+        .coral-btn {
+            padding: 14px 36px; background: var(--accent-coral); border: none;
+            color: #ffffff; font-family: inherit; font-size: 0.95rem; font-weight: 700;
+            border-radius: 24px; cursor: pointer; transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(224,102,92,0.2);
         }
-        .sleek-btn:hover {
-            background: var(--accent-cyan); transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 240, 255, 0.3);
+        .coral-btn:hover {
+            background: var(--accent-coral-hover); transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(224,102,92,0.3);
         }
 
         .canvas-frame {
-            flex: 1; background: #070709; border: 1px solid var(--glass-border);
-            border-radius: 20px; position: relative; overflow: hidden;
-            box-shadow: inset 0 0 40px rgba(0,0,0,0.6);
+            width: 100%; max-width: 800px; height: 400px; background: var(--panel-cream);
+            border: 2px solid var(--border-soft); border-radius: 20px; overflow: hidden;
+            box-shadow: 0 12px 36px rgba(30, 45, 36, 0.08); position: relative;
         }
-        #star-map { width: 100%; height: 100%; display: block; cursor: none; }
+        #precision-canvas { width: 100%; height: 100%; display: block; cursor: none; }
         
-        .btn-close {
-            position: absolute; top: 40px; right: 40px; background: rgba(255,255,255,0.04);
-            border: 1px solid var(--glass-border); color: var(--text-secondary);
-            font-family: inherit; cursor: pointer; font-size: 0.75rem; font-weight: 600;
-            text-transform: uppercase; letter-spacing: 1px; padding: 8px 16px; border-radius: 20px;
-            transition: all 0.2s ease;
+        .btn-exit {
+            position: absolute; top: -56px; left: 0; background: var(--panel-cream);
+            border: 2px solid var(--border-soft); color: var(--text-dark); font-weight: 700;
+            cursor: pointer; font-size: 0.8rem; padding: 8px 18px; border-radius: 20px; transition: all 0.2s;
         }
-        .btn-close:hover { color: #ffffff; background: rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
+        .btn-exit:hover { background: var(--text-dark); color: #ffffff; }
+
+        /* ==========================================
+           SCENIC ILLUSTRATIVE BACKDROP ENVIRONMENT
+           ========================================== */
+        .scenic-environment {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 160px;
+            pointer-events: none; z-index: 1; display: flex; flex-direction: column; justify-content: flex-end;
+        }
+        .lake-water {
+            width: 100%; height: 50px; background-color: #abbfb6; position: relative;
+        }
+        /* Simple clean flat vector trees outline mimicking the reference art look */
+        .tree-line-wrapper {
+            display: flex; justify-content: space-between; padding: 0 10%; margin-bottom: -4px;
+        }
+        .tree-cluster { display: flex; gap: -10px; align-items: flex-end; }
+        .cozy-tree {
+            width: 0; height: 0; 
+            border-left: 20px solid transparent; border-right: 20px solid transparent;
+            border-bottom: 55px solid #9bb0a5; position: relative;
+        }
+        .cozy-tree.tall { border-left-width: 25px; border-right-width: 25px; border-bottom-height: 75px; border-bottom-color: #8fa69a; }
+        .cozy-tree.small { border-left-width: 15px; border-right-width: 15px; border-bottom-width: 40px; border-bottom-color: #a7bcae; }
     </style>
 </head>
 <body>
 
     <div class="app-shell">
-        <div class="header-hud">
-            <div class="logo-mark">SYNAPSE TERMINAL</div>
-            <div class="status-badge" id="system-hud-status">Ecosystem Live</div>
+        <div class="game-nav">
+            <div class="brand-title">Synapse Sanctuary</div>
+            <div class="nav-status" id="hud-mode-badge">Calm Mind // Clear Track</div>
         </div>
 
-        <div id="view-home" class="stage-view active">
-            <div class="intro-text-wrapper">
-                <h2>Interactive Accessibility Calibration</h2>
-                <p>Select an interface experiment below to train spatial recognition speeds or test physical fine-motor kinematic trajectory dampening.</p>
+        <div id="stage-home" class="game-stage active">
+            <div class="hero-text">
+                <h2>Where Calm Meets Creativity.</h2>
+                <p>Imagine a space that feels like a deep breath—gentle, clear, and grounding. Welcome to your private digital sanctuary to reflect, align, and steady your focus.</p>
             </div>
             
-            <div class="deck-grid">
-                <div class="premium-card" onclick="switchActiveView('language')">
-                    <div class="card-tag">Cognitive Sync</div>
-                    <h3 class="card-heading">Language Arena</h3>
-                    <p class="card-body">A flowing typographic narrative experience mapped with structural word traps to analyze cognitive decoding pathways.</p>
+            <div class="deck-row">
+                <div class="cozy-card" onclick="switchStageView('language')">
+                    <div class="card-emoji">🧘‍♂️</div>
+                    <h3 class="card-title">Mindful Tools</h3>
+                    <p class="card-desc">Follow a gentle, calming interactive journey designed to ease typographic character flips and soothe reading stress.</p>
                 </div>
                 
-                <div class="premium-card" onclick="switchActiveView('precision')">
-                    <div class="card-tag">Kinematic Dampener</div>
-                    <h3 class="card-heading">Precision Canvas</h3>
-                    <p class="card-body">A sleek spatial testing vector that translates physical hand micro-tremors into ultra-fluid mathematical flight tracks.</p>
+                <div class="cozy-card" onclick="switchStageView('precision')">
+                    <div class="card-emoji">🍃</div>
+                    <h3 class="card-title">Gentle Reminders</h3>
+                    <p class="card-desc">A peaceful target canvas that embraces physical micro-tremors, transforming inputs into beautiful, fluid lines.</p>
                 </div>
             </div>
         </div>
 
-        <div id="view-language" class="stage-view">
-            <div class="workspace-split">
-                <div class="glass-console">
-                    <button class="btn-close" onclick="switchActiveView('home')">Disconnect</button>
-                    <div id="story-terminal-log" class="story-scroller" style="margin-top: 40px;">
-                        Loading transmission nodes...
+        <div id="stage-language" class="game-stage">
+            <div class="bridge-layout">
+                <div class="story-console">
+                    <button class="btn-exit" onclick="switchStageView('home')">← Back to Sanctuary</button>
+                    <div id="story-text-container" class="story-text">
+                        Connecting to the transmission channel...
                     </div>
-                    <div id="story-choices" class="button-dock"></div>
+                    <div id="story-choices-dock" class="choice-dock"></div>
                 </div>
             </div>
         </div>
 
-        <div id="view-precision" class="stage-view">
-            <div class="workspace-split">
-                <div class="glass-console" style="flex: 1; min-height: 460px; padding: 0; overflow: hidden;">
-                    <button class="btn-close" style="z-index: 100;" onclick="switchActiveView('home')">Exit Test</button>
-                    <div class="canvas-frame" style="width: 100%; height: 100%;">
-                        <canvas id="star-map"></canvas>
-                    </div>
+        <div id="stage-precision" class="game-stage">
+            <div class="bridge-layout">
+                <div class="canvas-frame">
+                    <button class="btn-exit" onclick="switchStageView('home')">← Back to Sanctuary</button>
+                    <canvas id="precision-canvas"></canvas>
                 </div>
             </div>
+        </div>
+
+        <div class="scenic-environment">
+            <div class="tree-line-wrapper">
+                <div class="tree-cluster">
+                    <div class="cozy-tree small"></div>
+                    <div class="cozy-tree tall"></div>
+                    <div class="cozy-tree"></div>
+                </div>
+                <div class="tree-cluster">
+                    <div class="cozy-tree"></div>
+                    <div class="cozy-tree tall"></div>
+                    <div class="cozy-tree small"></div>
+                </div>
+            </div>
+            <div class="lake-water"></div>
         </div>
     </div>
 
