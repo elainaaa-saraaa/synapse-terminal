@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYNAPSE // TERMINAL</title>
+    <style>
+        :root {
+            --bg-space: radial-gradient(circle at 50% 50%, #0a0813 0%, #020104 100%);
+            --panel-dark: rgba(14, 12, 22, 0.7);
+            --neon-cyan: #00ffff;
+            --neon-purple: #a855f7;
+            --border-glow: rgba(168, 85, 247, 0.2);
+            --text-muted: #71717a;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background: var(--bg-space); color: #e4e4e7;
+            font-family: 'Courier New', Courier, monospace; overflow: hidden;
+        }
+
+        /* Ambient scanline overlay for retro-terminal texture */
+        body::before {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 99999; background-size: 100% 4px, 6px 100%; pointer-events: none;
+        }
+
+        /* MAIN APP SHELL COCKPIT */
+        .app-container {
+            display: flex; flex-direction: column; width: 100%; height: 100%; box-sizing: border-box;
+        }
+
+        .hud-header {
+            padding: 24px; border-bottom: 1px solid rgba(168, 85, 247, 0.2);
+            text-align: center; background: rgba(6, 4, 10, 0.8); backdrop-filter: blur(8px);
+        }
+        h1 { margin: 0; color: var(--neon-cyan); font-size: 2rem; letter-spacing: 6px; text-shadow: 0 0 12px rgba(0,255,255,0.3); }
+        .system-status { margin: 6px 0 0 0; font-size: 0.75rem; color: var(--neon-purple); letter-spacing: 3px; text-transform: uppercase; }
+
+        /* VIEW CONTAINER STATE MACHINE */
+        .view-frame { flex: 1; display: none; padding: 32px; box-sizing: border-box; }
+        .view-frame.active { display: flex; }
+
+        /* ==========================================
+           VIEW 1: ELEGANT TERMINAL HOME SCREEN
+           ========================================== */
+        #view-home {
+            flex-direction: column; align-items: center; justify-content: center; gap: 40px;
+        }
+        .welcome-log {
+            width: 100%; max-width: 700px; text-align: left; line-height: 1.6; color: #a1a1aa; font-size: 0.95rem;
+        }
+        .grid-matrix {
+            display: flex; gap: 32px; width: 100%; max-width: 900px; justify-content: center;
+        }
+        .module-card {
+            flex: 1; background: var(--panel-dark); border: 1px solid #1f1a3a; border-radius: 12px;
+            padding: 32px; text-align: left; cursor: pointer; position: relative;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); overflow: hidden;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.4), inset 0 0 15px rgba(168,85,247,0.05);
+        }
+        .module-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--neon-purple); opacity: 0.4;
+        }
+        .module-card:hover {
+            border-color: var(--neon-cyan); transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,255,255,0.1), inset 0 0 20px rgba(0,255,255,0.05);
+        }
+        .module-card:hover::before { background: var(--neon-cyan); opacity: 1; }
+        .card-icon { font-size: 1.5rem; color: var(--neon-cyan); margin-bottom: 16px; font-weight: bold; }
+        .card-title { font-size: 1.3rem; font-weight: 700; color: #ffffff; margin-bottom: 8px; letter-spacing: 1px; }
+        .card-desc { font-size: 0.85rem; color: #a1a1aa; line-height: 1.6; }
+
+        /* ==========================================
+           VIEW 2 & 3: GAME SYSTEMS BRIDGES
+           ========================================== */
+        .bridge-layout { gap: 32px; width: 100%; }
+        .console-screen {
+            flex: 1.4; background: rgba(14, 12, 22, 0.5); border: 2px solid #1f1a3a;
+            border-radius: 12px; display: flex; flex-direction: column; padding: 32px;
+            box-shadow: inset 0 0 40px rgba(0,0,0,0.8); position: relative;
+        }
+        .transmission-text { flex: 1; font-size: 1.3rem; line-height: 1.8; color: #d4d4d8; }
+        .interactive-word { color: var(--neon-cyan); font-weight: bold; text-decoration: underline; text-shadow: 0 0 8px rgba(0,255,255,0.3); }
+        
+        .choice-container { display: flex; gap: 20px; justify-content: center; margin-top: 16px; }
+        .action-button {
+            padding: 16px 36px; background: #131024; border: 1px solid var(--neon-purple);
+            color: #ffffff; font-family: inherit; font-size: 1rem; font-weight: bold;
+            border-radius: 6px; cursor: pointer; transition: all 0.2s ease; letter-spacing: 1px;
+        }
+        .action-button:hover {
+            background: var(--neon-purple); box-shadow: 0 0 20px rgba(168, 85, 247, 0.5);
+            transform: translateY(-2px); color: #ffffff;
+        }
+
+        .canvas-container {
+            flex: 1; background: #030206; border: 2px solid #1f1a3a; border-radius: 12px;
+            position: relative; overflow: hidden; box-shadow: inset 0 0 40px rgba(0,0,0,0.9);
+        }
+        #star-map { width: 100%; height: 100%; display: block; cursor: none; }
+        
+        .back-nav {
+            position: absolute; top: -16px; left: 0; background: none; border: none;
+            color: var(--text-muted); font-family: inherit; cursor: pointer; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 1px; padding: 20px; z-index: 10;
+        }
+        .back-nav:hover { color: var(--neon-cyan); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="hud-header">
+            <h1>SYNAPSE // TERMINAL</h1>
+            <div class="system-status" id="system-hud-status">Ecosystem Baseline: Calibrating</div>
+        </div>
+
+        <div id="view-home" class="view-frame active">
+            <div class="welcome-log">
+                &gt;&gt; Initialize spatial cognitive evaluation platform...<br>
+                &gt;&gt; System loaded. Ready to deploy environment loops. Select tracking vector sequence:
+            </div>
+            
+            <div class="grid-matrix">
+                <div class="module-card" onclick="switchActiveView('language')">
+                    <div class="card-icon">[ 🧠 COGNITIVE_SYNC ]</div>
+                    <div class="card-title">Language Arena</div>
+                    <div class="card-desc">An interactive story deck designed to train visual-spatial orientation and map character alignment paths.</div>
+                </div>
+                
+                <div class="module-card" onclick="switchActiveView('precision')">
+                    <div class="card-icon">[ 🦾 KINEMATIC_DAMP ]</div>
+                    <div class="card-title">Precision Canvas</div>
+                    <div class="card-desc">Calibrate fine motor loops via a dynamic target field implementing real-time low-pass path smoothing vectors.</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-language" class="view-frame">
+            <div class="bridge-layout" style="display: flex;">
+                <div class="console-screen">
+                    <button class="back-nav" onclick="switchActiveView('home')">&lt;&lt; Terminate Connection</button>
+                    <div id="story-terminal-log" class="transmission-text" style="margin-top: 24px;">
+                        Loading transmission stream...
+                    </div>
+                    <div id="story-choices" class="choice-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-precision" class="view-frame">
+            <div class="bridge-layout" style="display: flex;">
+                <div class="console-screen" style="flex: 1; min-height: 400px; padding:0; overflow:hidden;">
+                    <button class="back-nav" onclick="switchActiveView('home')">&lt;&lt; Break Tracking</button>
+                    <div class="canvas-container" style="width:100%; height:100%;">
+                        <canvas id="star-map"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>
